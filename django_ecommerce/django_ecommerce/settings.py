@@ -8,14 +8,21 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
+DEBUG = True
+TEMPLATE_DEBUG = True
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 PROJECT_ROOT = os.path.realpath(os.path.dirname(__file__))
 SITE_ROOT = os.path.dirname(PROJECT_ROOT)
 
-SITE_ID = 1
+# stripe settings
+STRIPE_SECRET = 'sk_test_1T4pUFo20dJXT69W2PuuXLmW'
+STRIPE_PUBLISHABLE = 'pk_test_j2dORLCUsPdfvAvGA05ugQ6d'
 
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
@@ -24,9 +31,6 @@ SITE_ID = 1
 SECRET_KEY = 't(h=1j57qcr=!9)twrr($@0*$s=w%^o9ji%p1zp9j7k2%cae^@'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -76,6 +80,8 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
+SITE_ID = 1
+
 LANGUAGE_CODE = 'en-us'
 
 TIME_ZONE = 'UTC'
@@ -101,6 +107,3 @@ STATICFILES_DIRS = (
 STATIC_URL = '/static/'
 
 
-# stripe settings
-STRIPE_SECRET = 'sk_test_1T4pUFo20dJXT69W2PuuXLmW'
-STRIPE_PUBLISHABLE = 'pk_test_j2dORLCUsPdfvAvGA05ugQ6d'
