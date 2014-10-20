@@ -20,10 +20,10 @@ class UserModelTest(TestCase):
         #cls.test_user.save()
 
     def test_contactform_str_returns_email(self):
-        self.assertEquals("first@first.com", str(self.firstUser))
+        self.assertEqual("first@first.com", str(self.firstUser))
 
 # This test keeps failing. Need to figure out what's wrong
     def test_ordering(self):
         contacts = ContactForm.objects.all()
         self.assertTrue(contacts.ordered)
-        self.assertEquals(contacts[0], self.firstUser)
+        self.assertEqual(contacts[0], self.firstUser)
