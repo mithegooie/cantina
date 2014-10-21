@@ -66,9 +66,9 @@ class FormTests(SimpleTestCase, FormTesterMixin):
     def test_signin_form_data_validation_for_invalid_data(self):
         invalid_data_list = [
             {'data': {'email': 'j@j.com'},
-             'error': ('password', [u'This field is required.'])},
+             'error': ('password', ['This field is required.'])},
             {'data': {'password': '1234'},
-             'error': ('email', [u'This field is required.'])}
+             'error': ('email', ['This field is required.'])}
 
         ]
 
@@ -122,14 +122,14 @@ class FormTests(SimpleTestCase, FormTesterMixin):
                 'data': {'last_4_digits': '123'},
                 'error': (
                     'last_4_digits', 
-                    [u'Ensure this value has at least 4 characters (it has 3).']
+                    ['Ensure this value has at least 4 characters (it has 3).']
                 )
             },
             {
                 'data': {'last_4_digits': '12345'},
                 'error': (
                     'last_4_digits', 
-                    [u'Ensure this value has at most 4 characters (it has 5).']
+                    ['Ensure this value has at most 4 characters (it has 5).']
                 )
             }
         ]
@@ -193,7 +193,7 @@ class SignOutPageTests(TestCase, ViewTesterMixin):
         ViewTesterMixin.setupViewTester(
             '/sign_out',
             sign_out,
-            "", # a redirect will return no html
+            b"", # a redirect will return no html
             status_code=302,
             session={"user": "dummy"},
         )
@@ -211,11 +211,11 @@ class RegisterPageTests(TestCase, ViewTesterMixin):
             'register.html',
             {
                 'form': UserForm(),
-                'months': range(1, 12),
+                'months': list(range(1, 12)),
                 'publishable': settings.STRIPE_PUBLISHABLE,
                 'soon': soon(),
                 'user': None,
-                'years': range(2011, 2036),
+                'years': list(range(2011, 2036)),
             }
         )
         ViewTesterMixin.setupViewTester(
@@ -288,7 +288,7 @@ class RegisterPageTests(TestCase, ViewTesterMixin):
 
         resp = register(self.request)
 
-        self.assertEquals(resp.content, "")
+        self.assertEquals(resp.content, b"")
         self.assertEquals(resp.status_code, 302)
         self.assertEquals(self.request.session['user'], new_user.pk)
 
@@ -345,7 +345,7 @@ class EditPageTests(TestCase, ViewTesterMixin):
         ViewTesterMixin.setupViewTester(
             '/edit',
             edit,
-            "", # a redirect will return no html
+            b"", # a redirect will return no html
             status_code=302,
         )
 

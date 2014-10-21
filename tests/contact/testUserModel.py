@@ -13,7 +13,7 @@ class UserModelTest(TestCase):
         cls.firstUser = ContactForm(
             email="first@first.com",
             name="first",
-            timestamp=datetime.today() + timedelta(days=100)
+            timestamp=datetime.today() + timedelta(days=2)
         )
         cls.firstUser.save()
         #cls.test_user=User(email="j@j.com", name="test user")
@@ -26,4 +26,4 @@ class UserModelTest(TestCase):
     def test_ordering(self):
         contacts = ContactForm.objects.all()
         self.assertTrue(contacts.ordered)
-        self.assertEqual(contacts[0], self.firstUser)
+        self.assertEqual(self.firstUser, contacts[0])
