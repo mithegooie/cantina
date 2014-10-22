@@ -1,4 +1,4 @@
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, render_to_response
 from django.template import RequestContext
@@ -76,19 +76,20 @@ def register(request):
 
             cd = form.cleaned_data
             try:
-                user = User.create(
-                    cd['name'],
-                    cd['email'],
-                    cd['password'],
-                    cd['last_4_digits'],
-                    stripe_id=''
-                )
+                with transaction.atomic():            
+                    user = User.create(
+                        cd['name'],
+                        cd['email'],
+                        cd['password'],
+                        cd['last_4_digits'],
+                        stripe_id=''
+                    )
 
-                if customer:
-                    user.stripe_id = customer.id
-                    user.save()
-                else:
-                    UnpaidUsers(email=cd['email']).save()
+                    if customer:
+                        user.stripe_id = customer.id
+                        user.save()
+                    else:
+                        UnpaidUsers(email=cd['email']).save()
 
             except IntegrityError:
                 import traceback
