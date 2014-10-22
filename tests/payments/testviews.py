@@ -1,145 +1,14 @@
-from django.test import TestCase, SimpleTestCase, RequestFactory
-from django import forms
+from django.test import TestCase, RequestFactory
 from django.core.urlresolvers import resolve
 from django.shortcuts import render_to_response
 from django.db import IntegrityError
 from payments.models import User
-from payments.forms import SigninForm, UserForm, CardForm
-from payments.views import soon, sign_in, sign_out, register, edit, Customer
+from payments.forms import SigninForm, UserForm
+from payments.views import soon, sign_in, sign_out, register, edit
 import django_ecommerce.settings as settings
 import mock
 
 # Create your tests here.
-
-class UserModelTest(TestCase):
-
-    @classmethod
-    def setUpClass(cls):
-        cls.test_user = User(email="j@j.com", name='test user')
-        cls.test_user.save()
-
-    def test_user_to_string_print_email(self):
-        self.assertEquals(str(self.test_user), "j@j.com")
-
-    def test_create_user_function_stores_in_database(self):
-        user = User.create("test", "test@t.com", "tt", "1234", "22")
-        self.assertEquals(User.objects.get(email="test@t.com"), user)
-
-    def test_create_user_already_exists_throws_IntegrityError(self):
-        self.assertRaises(
-            IntegrityError,
-            User.create,
-            "test user",
-            "j@j.com",
-            "jj",
-            "1234",
-            89
-        )
-
-    def test_get_by_id(self):
-        self.assertEquals(User.get_by_id(1), self.test_user)
-
-
-
-class FormTesterMixin():
-
-    def assertsFormError(self, form_cls, expected_error_name,
-                        expected_error_msg, data):
-
-        from pprint import pformat
-        test_form = form_cls(data=data)
-
-        # if we get an error thenthe form should not be valid
-        self.assertFalse(test_form.is_valid())
-
-        self.assertEquals(
-            test_form.errors[expected_error_name],
-            expected_error_msg,
-            msg="Expected {} : Actual {} : using data {}".format(
-                test_form.errors[expected_error_name],
-                expected_error_msg, pformat(data)
-            )
-        )
-
-class FormTests(SimpleTestCase, FormTesterMixin):
-
-    def test_signin_form_data_validation_for_invalid_data(self):
-        invalid_data_list = [
-            {'data': {'email': 'j@j.com'},
-             'error': ('password', ['This field is required.'])},
-            {'data': {'password': '1234'},
-             'error': ('email', ['This field is required.'])}
-
-        ]
-
-        for invalid_data in invalid_data_list:
-            self.assertsFormError(SigninForm,
-                                 invalid_data['error'][0],
-                                 invalid_data['error'][1],
-                                 invalid_data["data"])
-
-    def test_user_form_passwords_match(self):
-        form = UserForm(
-            {
-                'name': 'jj',
-                'email': 'j@j.com',
-                'password': '1234',
-                'ver_password': '1234',
-                'last_4_digits': '3333',
-                'stripe_token': '1'
-            }
-        )
-        
-        # Is the data valid?
-        self.assertTrue(form.is_valid())
-
-        # This will throw an error if the form doesn't clean correctly
-        self.assertIsNotNone(form.clean())
-
-    def test_user_form_passwords_dont_match_throws_error(self):
-        form = UserForm(
-            {
-                'name': 'jj',
-                'email': 'j@j.com',
-                'password': '234',
-                'ver_password': '1234', # bad password
-                'last_4_digits': '3333',
-                'stripe_token': '1'
-            }
-        )
-        
-        # Is the data valid?
-        self.assertFalse(form.is_valid())
-
-        # This will throw an error if the form doesn't clean correctly
-        self.assertRaisesMessage(forms.ValidationError,
-                                 "Passwords do not match",
-                                 form.clean)
-
-    def test_card_form_data_validation_for_invalid_data(self):
-        invalid_data_list = [
-            {
-                'data': {'last_4_digits': '123'},
-                'error': (
-                    'last_4_digits', 
-                    ['Ensure this value has at least 4 characters (it has 3).']
-                )
-            },
-            {
-                'data': {'last_4_digits': '12345'},
-                'error': (
-                    'last_4_digits', 
-                    ['Ensure this value has at most 4 characters (it has 5).']
-                )
-            }
-        ]
-
-        for invalid_data in invalid_data_list:
-            self.assertsFormError(CardForm,
-                                 invalid_data['error'][0],
-                                 invalid_data['error'][1],
-                                 invalid_data["data"])
-
 
 class ViewTesterMixin(object):
 
@@ -228,7 +97,19 @@ class RegisterPageTests(TestCase, ViewTesterMixin):
         request_factory = RequestFactory()
         self.request = request_factory.get(self.url)
 
+    def get_mock_cust():
+
+        class mock_cust():
+
+            @property
+            def id(self):
+                return 1234
+
+        return mock_cust()
+
     def get_MockUserForm(self):
+
+        from django import forms
 
         class MockUserForm(forms.Form):
 
@@ -265,11 +146,8 @@ class RegisterPageTests(TestCase, ViewTesterMixin):
             # make sure that we did indeed call our is_valid function
             self.assertEquals(user_mock.call_count, 1)
 
-    @mock.patch('payments.views.Customer.create')
-    @mock.patch.object(User, 'create')
-    def test_registering_new_user_returns_successfully(
-        self, create_mock, stripe_mock
-    ):
+    @mock.patch('payments.views.Customer.create', return_value=get_mock_cust())
+    def test_registering_new_user_returns_successfully(self, stripe_mock):
 
         self.request.session = {}
         self.request.method = 'POST'
@@ -282,21 +160,14 @@ class RegisterPageTests(TestCase, ViewTesterMixin):
             'ver_password': 'bad_password',
         }
 
-        # get the return values of the mocks, for our checks later
-        new_user = create_mock.return_value
-        new_cust = stripe_mock.return_value
-
         resp = register(self.request)
 
         self.assertEquals(resp.content, b"")
         self.assertEquals(resp.status_code, 302)
-        self.assertEquals(self.request.session['user'], new_user.pk)
 
-        # verify the user was actually stored in the database.
-        # if the user is not there this will throw an error
-        create_mock.assert_called_with(
-            'pyRock', 'python@rocks.com', 'bad_password', '4242', new_cust.id
-        )
+        users = User.objects.filter(email="python@rocks.com")
+        self.assertEquals(len(users), 1)
+        self.assertEquals(users[0].stripe_id, '1234')
 
     @mock.patch('payments.views.UserForm', get_MockUserForm)
     @mock.patch('payments.models.User.save', side_effect=IntegrityError)
@@ -321,9 +192,10 @@ class RegisterPageTests(TestCase, ViewTesterMixin):
         )
 
         # mock out stripe so we don't hit their server
-        with mock.patch('payments.views.Customer.create') as stripe_mock:
+        with mock.patch('payments.views.Customer') as stripe_mock:
 
-            stripe_mock.return_value = mock.Mock()
+            config = {'create.return_value': mock.Mock()}
+            stripe_mock.configure(**config)
 
             # run the test
             resp = register(self.request)
@@ -337,6 +209,37 @@ class RegisterPageTests(TestCase, ViewTesterMixin):
             users = User.objects.filter(email="python@rocks.com")
             self.assertEquals(len(users), 0)
 
+#    def test_registering_user_when_stripe_is_down(self):
+#
+#        # create the request used to test the view
+#        self.request.session = {}
+#        self.request.method = 'POST'
+#        self.request.POST = {
+#            'email': 'python@rocks.com',
+#            'name': 'pyRock',
+#            'stripe_token': '...',
+#            'last_4_digits': '4242',
+#            'password': 'bad_password',
+#            'ver_password': 'bad_password',
+#        }
+#
+#        # mock out Stripe and ask it to throw a connection error
+#        with mock.patch(
+#            'stripe.Customer.create',
+#            side_effect=socket.error("Can't connect to Stripe")
+#        ) as stripe_mock:
+#
+#            # run the test
+#            register(self.request)
+#
+#            # assert there is a record in teh database without Stripe id
+#            users = User.objects.filter(email="python@rocks.com")
+#            self.assertEquals(len(users), 1)
+#            self.assertEquals(users[0].stripe_id, '')
+#
+#        # check the associated table got updated
+#        unpaid =
+
 
 class EditPageTests(TestCase, ViewTesterMixin):
 
@@ -348,30 +251,3 @@ class EditPageTests(TestCase, ViewTesterMixin):
             b"", # a redirect will return no html
             status_code=302,
         )
-
-
-class CustomerTests(TestCase):
-
-    def test_create_subscription(self):
-        with mock.patch('stripe.Customer.create') as create_mock:
-            cust_data = {
-                'description': 'test user',
-                'email': 'test@test.com',
-                'card': '4242',
-                'plan': 'gold'
-            }
-            Customer.create("subscription", **cust_data)
-
-            create_mock.assert_called_with(**cust_data)
-
-    def test_create_one_time_bill(self):
-        with mock.patch('stripe.Charge.create') as charge_mock:
-            cust_data = {
-                'description': 'test user',
-                'card': '1234',
-                'amount': '5000',
-                'currency': 'usd'
-            }
-            Customer.create("one_time", **cust_data)
-
-            charge_mock.assert_called_with(**cust_data)
