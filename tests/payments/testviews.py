@@ -2,7 +2,7 @@ from django.test import TestCase, RequestFactory
 from django.core.urlresolvers import resolve
 from django.shortcuts import render_to_response
 from django.db import IntegrityError
-from payments.models import User
+from payments.models import User, UnpaidUsers
 from payments.forms import SigninForm, UserForm
 from payments.views import soon, sign_in, sign_out, register, edit
 import django_ecommerce.settings as settings
@@ -233,10 +233,15 @@ class RegisterPageTests(TestCase, ViewTesterMixin):
             # run the test
             register(self.request)
 
-            # assert there is a record in teh database without Stripe id
+            # assert there is a record in the database without Stripe id
             users = User.objects.filter(email="python@rocks.com")
             self.assertEquals(len(users), 1)
             self.assertEquals(users[0].stripe_id, '')
+
+        # check the associated table got updated
+        unpaid = UnpaidUsers.objects.filter(email="python@rocks.com")
+        self.assertEquals(len(unpaid), 1)
+        self.assertIsNotNone(unpaid[0].last_notification)
 
 
 
