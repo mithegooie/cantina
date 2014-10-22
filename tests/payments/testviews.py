@@ -167,8 +167,8 @@ class RegisterPageTests(TestCase, ViewTesterMixin):
         self.assertEquals(resp.status_code, 302)
 
         users = User.objects.filter(email="python@rocks.com")
-        self.assertEquals(len(users), 1)
-        self.assertEquals(users[0].stripe_id, '1234')
+        self.assertEqual(len(users), 1)
+        self.assertEqual(users[0].stripe_id, '1234')
 
     @mock.patch('payments.views.UserForm', get_MockUserForm)
     @mock.patch('payments.models.User.save', side_effect=IntegrityError)
