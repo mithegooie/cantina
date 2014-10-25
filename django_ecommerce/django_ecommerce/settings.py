@@ -104,6 +104,11 @@ TEMPLATE_DIRS = (
     os.path.join(SITE_ROOT, 'templates'),
 )
 
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
+
 STATICFILES_DIRS = (
     os.path.join(SITE_ROOT, 'static'),
 )
