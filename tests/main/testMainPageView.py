@@ -39,7 +39,7 @@ class MainPageTests(TestCase):
         resp = index(self.request)
         self.assertEquals(
             resp.content,
-            render_to_response('index.html').content
+            render_to_response('main/index.html').content
         )
 
     def test_index_handles_logged_in_user(self):
@@ -62,7 +62,7 @@ class MainPageTests(TestCase):
 
             # verify the response returns the page for the logged in user
             expectedHtml = render_to_response(
-                'user.html', 
+                'main/user.html', 
                 {'user': user_mock.get_by_id(1)}
             )
             self.assertEquals(resp.content, expectedHtml.content)
