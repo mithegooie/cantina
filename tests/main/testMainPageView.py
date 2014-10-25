@@ -39,7 +39,10 @@ class MainPageTests(TestCase):
         resp = index(self.request)
         self.assertEquals(
             resp.content,
-            render_to_response('main/index.html').content
+            render_to_response(
+                'main/index.html',
+                #{'marketing_items': market_item_list}
+            ).content
         )
 
     def test_index_handles_logged_in_user(self):
