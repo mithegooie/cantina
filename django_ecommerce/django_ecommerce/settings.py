@@ -49,6 +49,7 @@ INSTALLED_APPS = (
     'django.contrib.flatpages',
     'contact',
     'payments',
+    'embed_video',
 )
 
 MIDDLEWARE_CLASSES = (

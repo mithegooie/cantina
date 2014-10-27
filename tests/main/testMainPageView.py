@@ -4,6 +4,8 @@ from django.shortcuts import render_to_response
 from main.views import index
 import mock
 from payments.models import User
+from main.models import MarketingItem
+from main.migrations.data_load_marketing_items_0003 import init_marketing_data
 
 # Create your tests here.
 
@@ -36,12 +38,13 @@ class MainPageTests(TestCase):
     #####################################
 
     def test_returns_exact_html(self):
+        data = [MarketingItem(**d) for d in init_marketing_data]
         resp = index(self.request)
         self.assertEquals(
             resp.content,
             render_to_response(
                 'main/index.html',
-                #{'marketing_items': market_item_list}
+                {'marketing_items': data}
             ).content
         )
 
