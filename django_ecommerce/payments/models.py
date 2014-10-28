@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from datetime import datetime
+from main.models import Badge
 
 # Create your models here.
 
@@ -8,6 +9,7 @@ class User(AbstractBaseUser):
     name = models.CharField(max_length=255)
     email = models.CharField(max_length=255, unique=True)
     rank = models.CharField(max_length=50, default="Padwan")
+    badges = models.ManyToManyField(Badge)
     # password field defined in base classs
     last_4_digits = models.CharField(max_length=4, blank=True, null=True)
     stripe_id = models.CharField(max_length=255)
