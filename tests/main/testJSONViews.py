@@ -1,5 +1,5 @@
 from django.test import TestCase
-from main.json_views import status_collection, status_member
+from main.json_views import StatusCollection, StatusMember
 from main.models import StatusReport
 from main.serializers import StatusReportSerializer
 
@@ -19,6 +19,6 @@ class JsonViewTests(TestCase):
     def test_get_collection(self):
         status = StatusReport.objects.all()
         expected_json = StatusReportSerializer(status, many=True).data
-        response = status_collection(dummyRequest('GET'))
+        response = StatusCollection.as_view()(dummyRequest("GET"))
 
         self.assertEqual(expected_json, response.data)
