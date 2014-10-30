@@ -50,6 +50,7 @@ INSTALLED_APPS = (
     'contact',
     'payments',
     'embed_video',
+    'rest_framework',
 )
 
 MIDDLEWARE_CLASSES = (

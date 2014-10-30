@@ -38,4 +38,4 @@ class User(AbstractBaseUser):
 
 class UnpaidUsers(models.Model):
     email = models.CharField(max_length=255, unique=True)
-    last_notification = models.DateTimeField(default=datetime.now())
+    last_notification = models.DateTimeField(default=datetime.utcnow())

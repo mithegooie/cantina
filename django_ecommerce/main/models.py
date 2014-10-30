@@ -10,8 +10,14 @@ class MarketingItem(models.Model):
 
 class StatusReport(models.Model):
     user = models.ForeignKey('payments.User')
-    when = models.DateTimeField(auto_now=True)
+    when = models.DateTimeField(blank=True)
     status = models.CharField(max_length=200)
+
+    def save(self, *args, **kwargs):
+        from datetime import datetime
+        if self.when is None:
+            self.when = datetime.now()
+        super(StatusReport, self).save(*args, **kwargs)
 
 class Announcement(models.Model):
     when = models.DateTimeField(auto_now=True)
