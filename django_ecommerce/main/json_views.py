@@ -1,6 +1,7 @@
-from rest_framework import mixins, generics
+from rest_framework import mixins, generics, permissions
 from main.serializers import StatusReportSerializer
 from main.models import StatusReport
+from main.permissions import IsOwnerOrReadOnly
 
 
 class StatusCollection(mixins.ListModelMixin,
@@ -9,6 +10,7 @@ class StatusCollection(mixins.ListModelMixin,
 
     queryset = StatusReport.objects.all()
     serializer_class = StatusReportSerializer
+    permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
         return self.list(request)
@@ -24,6 +26,7 @@ class StatusMember(mixins.RetrieveModelMixin,
     
     queryset = StatusReport.objects.all()
     serializer_class = StatusReportSerializer
+    permission_classes = (permissions.IsAuthenticated, IsOwnerOrReadOnly)
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
