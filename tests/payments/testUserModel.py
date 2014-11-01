@@ -8,8 +8,13 @@ class UserModelTest(TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.test_user = User(email="j@j.com", name='test user')
+        cls.test_user = User(email="j@j.com", name='test user',
+                             password="pass", last_4_digits="1234")
         cls.test_user.save()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.test_user.delete()
 
     def test_user_to_string_print_email(self):
         self.assertEquals(str(self.test_user), "j@j.com")
@@ -30,4 +35,4 @@ class UserModelTest(TestCase):
         )
 
     def test_get_by_id(self):
-        self.assertEquals(User.get_by_id(1), self.test_user)
+        self.assertEquals(User.get_by_id(self.test_user.id), self.test_user)

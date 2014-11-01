@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
+#from django.utils import timezone
 from datetime import datetime
 from main.models import Badge
 
@@ -15,6 +16,7 @@ class User(AbstractBaseUser):
     stripe_id = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
+    bigCoID = models.CharField(max_length=50, unique=True)
 
     USERNAME_FIELD = 'email'
 
@@ -38,4 +40,4 @@ class User(AbstractBaseUser):
 
 class UnpaidUsers(models.Model):
     email = models.CharField(max_length=255, unique=True)
-    last_notification = models.DateTimeField(default=datetime.utcnow())
+    last_notification = models.DateTimeField(default=datetime.now())

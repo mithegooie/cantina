@@ -24,4 +24,32 @@ class Migration(migrations.Migration):
             },
             bases=(models.Model,),
         ),
+
+        migrations.CreateModel(
+            name='Announcement',
+            fields=[
+                ('id', models.AutoField(primary_key=True, verbose_name='ID', auto_created=True, serialize=False)),
+                ('when', models.DateTimeField(auto_now=True)),
+                ('img', models.CharField(max_length=255, null=True)),
+                ('vid', models.URLField(null=True)),
+                ('info', models.TextField()),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+
+        migrations.CreateModel(
+            name='Badge',
+            fields=[
+                ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
+                ('img', models.CharField(max_length=255)),
+                ('name', models.CharField(max_length=100)),
+                ('desc', models.TextField()),
+            ],
+            options={
+                'ordering': ('name',),
+            },
+            bases=(models.Model,),
+        ),
     ]

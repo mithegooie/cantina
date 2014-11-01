@@ -8,13 +8,13 @@ import datetime
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('payments', '0005_auto_20141025_1223'),
+        ('payments', '0005_bigcoId_migration'),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='unpaidusers',
-            name='last_notification',
-            field=models.DateTimeField(default=datetime.datetime(2014, 10, 25, 12, 37, 6, 398904)),
+            model_name='user',
+            name='bigCoID',
+            field=models.CharField(max_length=50, unique=True),
         ),
     ]

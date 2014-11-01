@@ -22,6 +22,7 @@ class Migration(migrations.Migration):
                 ('timestamp', models.DateTimeField(default=datetime.datetime.now, auto_now_add=True)),
             ],
             options={
+                'ordering': ['-timestamp'],
             },
             bases=(models.Model,),
         ),

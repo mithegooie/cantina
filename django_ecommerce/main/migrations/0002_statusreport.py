@@ -7,8 +7,8 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('payments', '0009_auto_20141027_0722'),
-        ('main', 'data_load_marketing_items_0003'),
+        ('payments', '__first__'),
+        ('main', '0001_initial'),
     ]
 
     operations = [
@@ -16,7 +16,7 @@ class Migration(migrations.Migration):
             name='StatusReport',
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
-                ('when', models.DateTimeField(auto_now=True)),
+                ('when', models.DateTimeField(blank=True)),
                 ('status', models.CharField(max_length=200)),
                 ('user', models.ForeignKey(to='payments.User')),
             ],
@@ -25,3 +25,4 @@ class Migration(migrations.Migration):
             bases=(models.Model,),
         ),
     ]
+ 
