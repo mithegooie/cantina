@@ -51,6 +51,7 @@ INSTALLED_APPS = (
     'payments',
     'embed_video',
     'rest_framework',
+    'djangular_polls',
 )
 
 MIDDLEWARE_CLASSES = (
