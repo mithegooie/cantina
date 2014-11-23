@@ -7,7 +7,7 @@ class PollItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PollItem
-        fields = ('id', 'name', 'text', 'votes', 'percentage')
+        fields = ('id', 'poll', 'name', 'text', 'votes', 'percentage')
 
 class PollSerializer(serializers.ModelSerializer):
     items = PollItemSerializer(many=True, required=False)

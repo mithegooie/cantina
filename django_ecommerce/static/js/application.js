@@ -1,3 +1,11 @@
+var mecApp = angular.module('mecApp', []);
+
+mecApp.config(function($interpolateProvider) {
+    $interpolateProvider.startSymbol('[[')
+    .endSymbol(']]');
+});
+
+
 $(function() {
 
     $("#user_form").submit(function() {
@@ -33,20 +41,6 @@ $(function() {
         $("#change-card").hide();
         $("#change-card").show();
         $("#credit_card_number").focus();
-        return false;
-    });
-
-    //show status
-    $("#show-achieve").click(function() {
-        a = $("#achievements");
-        l = $("#show-achieve");
-        if (a.hasClass("hide")) {
-            a.hide().removeClass("hide").slideDown('slow');
-            l.html("Hide Achievements");
-        } else {
-            a.addClass("hide");
-            l.html("Show Achievements");
-        }
         return false;
     });
 
