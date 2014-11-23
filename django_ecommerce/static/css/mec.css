@@ -60,6 +60,14 @@ h1, .nav li, .navbar-brand {
     text-align: left;
 }
 
+#polls {
+    margin-left: 20px;
+}
+
+#polls h1 {
+    text-align: center;
+}
+
 .member-page {
     padding-top: 20px;
     padding-bottom: 40px;
